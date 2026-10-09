@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Admin Dashboard | Food Express</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f6fa;
+      overflow-x: hidden;
+    }
+
+    .admin-dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ===========================
+       SIDEBAR
+       =========================== */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 0;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 2em 1.5em;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-header h2 {
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 1em 0;
+    }
+
+    .sidebar li {
+      padding: 1.2em 1.5em;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.8em;
+      border-left: 4px solid transparent;
+    }
+
+    .sidebar li:hover {
+      background: rgba(255,255,255,0.1);
+      border-left-color: white;
+    }
+
+    .sidebar li.active {
+      background: rgba(255,255,255,0.15);
+      border-left-color: white;
+    }
+
+    /* Mobile Menu Toggle */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 1em;
+      left: 1em;
+      z-index: 1001;
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 0.8em;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    /* ===========================
+       MAIN CONTENT
+       =========================== */
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      padding: 2em;
+      min-height: 100vh;
+      width: calc(100% - 260px);
+    }
+
+    .header {
+      background: white;
+      padding: 1.5em 2em;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 2em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1em;
+    }
+
+    .header h1 {
+      color: #333;
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1em;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-box input {
+      padding: 0.8em 2.5em 0.8em 1em;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .search-box i {
+      position: absolute;
+      right: 1em;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+    }
+
+    .logout-btn {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 0.8em 1.5em;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+
+    .logout-btn:hover {
+      background: #cc0000;
+      transform: translateY(-2px);
+    }
+
+    /* ===========================
+       STATS GRID
+       =========================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5em;
+      margin-bottom: 2em;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 2em;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 1.5em;
+      transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .stat-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .stat-icon.orders {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    .stat-icon.revenue {
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+      color: white;
+    }
+
+    .stat-icon.users {
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      color: white;
+    }
+
+    .stat-icon.dishes {
+      background: linear-gradient(135deg, #43e97b, #38f9d7);
+      color: white;
+    }
+
+    .stat-info h3 {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      color: #333;
+      margin-bottom: 0.2em;
+    }
+
+    .stat-info p {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    /* ===========================
+       SECTIONS
+       =========================== */
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .data-table {
+      background: white;
+      padding: 2em;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow-x: auto;
+      margin-bottom: 2em;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5em;
+      flex-wrap: wrap;
+      gap: 1em;
+    }
+
+    .table-header h3 {
+      color: #333;
+      font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+    }
+
+    .add-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 0.8em 1.5em;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      white-space: nowrap;
+    }
+
+    .add-btn:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+
+    th {
+      background: #f5f6fa;
+      padding: 1.2em 1em;
+      text-align: left;
+      font-weight: 600;
+      color: #333;
+      border-bottom: 2px solid #e0e0e0;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 1.2em 1em;
+      border-bottom: 1px solid #f0f0f0;
+      color: #666;
+    }
+
+    tr:hover {
+      background: #f8f9fa;
+    }
+
+    .status-badge {
+      padding: 0.5em 1em;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .status-confirmed {
+      background: #e8f5e9;
+      color: #388e3c;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 0.5em;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.6em 1em;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .btn-view {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-edit {
+      background: #4caf50;
+      color: white;
+    }
+
+    .btn-delete {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    /* ===========================
+       MODALS
+       =========================== */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 1em;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2.5em;
+      border-radius: 20px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2em;
+      padding-bottom: 1em;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .modal-header h2 {
+      color: #333;
+      font-size: clamp(1.2rem, 3vw, 1.5rem);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: #999;
+      transition: all 0.3s;
+    }
+
+    .close-btn:hover {
+      color: #333;
+      transform: rotate(90deg);
+    }
+
+    .form-group {
+      margin-bottom: 1.5em;
+    }
+
+    .form-group label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 0.5em;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.8em;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 1em;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .submit-btn:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+    }
+
+    .order-detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 1em 0;
+      border-bottom: 1px solid #f0f0f0;
+      gap: 1em;
+    }
+
+    .order-items {
+      margin-top: 1.5em;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 1em;
+      background: #f8f9fa;
+      margin-bottom: 0.8em;
+      border-radius: 10px;
+      gap: 1em;
+    }
+
+    /* Dishes Grid */
+    .dishes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5em;
+      margin-top: 2em;
+    }
+
+    .dish-card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      transition: all 0.3s;
+    }
+
+    .dish-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .dish-card-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .dish-card-content {
+      padding: 1.5em;
+    }
+
+    .dish-card-title {
+      font-size: 1.2rem;
+      color: #333;
+      margin-bottom: 0.5em;
+    }
+
+    .dish-card-description {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 1em;
+      line-height: 1.5;
+    }
+
+    .dish-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1em;
+    }
+
+    .dish-price {
+      font-size: 1.3rem;
+      color: #667eea;
+      font-weight: 700;
+    }
+
+    .dish-actions {
+      display: flex;
+      gap: 0.5em;
+    }
+
+    /* ===========================
+       RESPONSIVE DESIGN
+       =========================== */
+    
+    /* Tablet */
+    @media (max-width: 968px) {
+      .sidebar {
+        width: 70px;
+      }
+
+      .sidebar-header h2 span,
+      .sidebar li span {
+        display: none;
+      }
+
+      .main-content {
+        margin-left: 70px;
+        width: calc(100% - 70px);
+      }
+
+      .search-box input {
+        width: 180px;
+      }
+
+      .header h1 {
+        font-size: 1.3rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 5em 1em 1em 1em;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .search-box input {
+        width: 100%;
+      }
+
+      .logout-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-card {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .table-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .add-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .dishes-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-content {
+        padding: 1.5em;
+      }
+
+      table {
+        font-size: 0.9rem;
+      }
+
+      th, td {
+        padding: 0.8em 0.5em;
+      }
+    }
+
+    /* Very small phones */
+    @media (max-width: 480px) {
+      .stat-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+      }
+
+      .stat-info h3 {
+        font-size: 1.5rem;
+      }
+
+      .btn {
+        padding: 0.5em 0.8em;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Menu Toggle -->
+  <button class="menu-toggle" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="admin-dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>
+          <i class="fas fa-shield-alt"></i>
+          <span>Admin Panel</span>
+        </h2>
+      </div>
+      <ul>
+        <li class="active" onclick="showSection('dashboard'); closeSidebar()">
+          <i class="fas fa-chart-line"></i>
+          <span>Dashboard</span>
+        </li>
+        <li onclick="showSection('orders'); closeSidebar()">
+          <i class="fas fa-shopping-bag"></i>
+          <span>Orders</span>
+        </li>
+        <li onclick="showSection('users'); closeSidebar()">
+          <i class="fas fa-users"></i>
+          <span>Users</span>
+        </li>
+        <li onclick="showSection('dishes'); closeSidebar()">
+          <i class="fas fa-utensils"></i>
+          <span>Menu Management</span>
+        </li>
+        <li onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="header">
+        <h1>Admin Dashboard</h1>
+        <div class="header-actions">
+          <div class="search-box">
+            <input type="text" id="global-search" placeholder="Search...">
+            <i class="fas fa-search"></i>
+          </div>
+          <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </div>
+
+      <!-- Dashboard Section -->
+      <div id="dashboard" class="section active">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon orders">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="total-orders">0</h3>
+              <p>Total Orders</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon revenue">
+              <i class="fas fa-rupee-sign"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="total-revenue">₹0</h3>
+              <p>Total Revenue</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon users">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="total-users">0</h3>
+              <p>Total Users</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon dishes">
+              <i class="fas fa-utensils"></i>
+            </div>
+            <div class="stat-info">
+              <h3 id="total-dishes">0</h3>
+              <p>Menu Items</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="data-table">
+          <div class="table-header">
+            <h3><i class="fas fa-receipt"></i> Recent Orders</h3>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="recent-orders-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Orders Section -->
+      <div id="orders" class="section">
+        <div class="data-table">
+          <div class="table-header">
+            <h3><i class="fas fa-shopping-bag"></i> All Orders</h3>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Phone</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="all-orders-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Users Section -->
+      <div id="users" class="section">
+        <div class="data-table">
+          <div class="table-header">
+            <h3><i class="fas fa-users"></i> All Users</h3>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Joined Date</th>
+                <th>Total Orders</th>
+                <th>Total Spent</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Dishes Section -->
+      <div id="dishes" class="section">
+        <div class="data-table">
+          <div class="table-header">
+            <h3><i class="fas fa-utensils"></i> Menu Management</h3>
+            <button class="add-btn" onclick="openAddDishModal()">
+              <i class="fas fa-plus"></i> Add New Dish
+            </button>
+          </div>
+          <div class="dishes-grid" id="dishes-grid"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Order Detail Modal -->
+  <div class="modal" id="order-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-file-invoice"></i> Order Details</h2>
+        <button class="close-btn" onclick="closeModal('order-modal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div id="order-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Dish Modal -->
+  <div class="modal" id="dish-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="dish-modal-title"><i class="fas fa-plus"></i> Add New Dish</h2>
+        <button class="close-btn" onclick="closeModal('dish-modal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form id="dish-form" onsubmit="saveDish(event)">
+        <input type="hidden" id="dish-id">
+        <div class="form-group">
+          <label>Dish Name</label>
+          <input type="text" id="dish-name" required>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="dish-description" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Price (₹)</label>
+          <input type="number" id="dish-price" required min="0">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="dish-category" required>
+            <option value="">Select Category</option>
+            <option value="Starters">Starters</option>
+            <option value="Main Course">Main Course</option>
+            <option value="Desserts">Desserts</option>
+            <option value="Beverages">Beverages</option>
+            <option value="Fast Food">Fast Food</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Image URL</label>
+          <input type="url" id="dish-image" placeholder="https://example.com/image.jpg">
+        </div>
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-save"></i> Save Dish
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <script src="js/firebase-config.js"></script>
+  <script src="js/admin.js"></script>
+
+  <script>
+    // Mobile sidebar toggle
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+    }
+
+    function closeSidebar() {
+      if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.remove('active');
+      }
+    }
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', function(event) {
+      const sidebar = document.getElementById('sidebar');
+      const menuToggle = document.querySelector('.menu-toggle');
+      
+      if (window.innerWidth <= 768) {
+        if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+          sidebar.classList.remove('active');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

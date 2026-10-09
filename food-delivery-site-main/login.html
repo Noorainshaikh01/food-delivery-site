@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Food Express</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 450px;
+    }
+
+    .auth-modal {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .auth-header i {
+      font-size: 4rem;
+      color: #667eea;
+      margin-bottom: 15px;
+    }
+
+    .auth-header h2 {
+      color: #333;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+
+    .auth-header p {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .input-group i.fa-envelope,
+    .input-group i.fa-lock {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #667eea;
+      font-size: 1.1rem;
+      z-index: 1;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 14px 45px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .input-group input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .input-group.password-field {
+      position: relative;
+    }
+
+    .input-group.password-field input {
+      padding-right: 45px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #999;
+      font-size: 1.1rem;
+      transition: color 0.3s;
+      z-index: 2;
+      background: white;
+      padding: 5px;
+    }
+
+    .toggle-password:hover {
+      color: #667eea;
+    }
+
+    button.auth-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    button.auth-btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+    }
+
+    button.auth-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    button.auth-btn:active {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .auth-switch {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .auth-switch a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .auth-switch a:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .back-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .back-link a:hover {
+      color: #764ba2;
+    }
+
+    .message {
+      padding: 1em;
+      border-radius: 8px;
+      margin-bottom: 1.5em;
+      display: none;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .error-message {
+      background: #ffebee;
+      color: #c62828;
+      border-left: 4px solid #c62828;
+    }
+
+    .success-message {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-left: 4px solid #2e7d32;
+    }
+
+    @media (max-width: 480px) {
+      .auth-modal {
+        padding: 30px 20px;
+      }
+
+      .auth-header h2 {
+        font-size: 1.5rem;
+      }
+
+      .auth-header i {
+        font-size: 3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="auth-modal">
+      <div class="auth-header">
+        <i class="fas fa-user-circle"></i>
+        <h2>Welcome Back</h2>
+        <p>Login to your account</p>
+      </div>
+
+      <div class="message error-message" id="error-message"></div>
+      <div class="message success-message" id="success-message"></div>
+
+      <form id="loginForm">
+        <div class="input-group">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="email" placeholder="Email Address" required>
+        </div>
+        <div class="input-group password-field">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="loginPassword" placeholder="Password" required minlength="6">
+          <span class="toggle-password" onclick="toggleLoginPassword()">
+            <i class="fas fa-eye" id="loginEyeIcon"></i>
+          </span>
+        </div>
+        <button type="submit" class="auth-btn" id="login-btn">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+        <p class="auth-switch">Don't have an account? <a href="signup.html">Sign Up</a></p>
+        <p class="back-link"><a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a></p>
+      </form>
+    </div>
+  </main>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <script src="js/firebase-config.js"></script>
+  
+  <script>
+    // ===========================
+    // PASSWORD TOGGLE FUNCTION
+    // ===========================
+    function toggleLoginPassword() {
+      const passwordInput = document.getElementById('loginPassword');
+      const eyeIcon = document.getElementById('loginEyeIcon');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        eyeIcon.classList.remove('fa-eye-slash');
+        eyeIcon.classList.add('fa-eye');
+      }
+    }
+
+    // ===========================
+    // LOGIN FUNCTIONALITY
+    // ===========================
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      await handleLogin();
+    });
+
+    async function handleLogin() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const loginBtn = document.getElementById('login-btn');
+      
+      hideMessages();
+      
+      if (!email || !password) {
+        showError('Please enter both email and password');
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+      
+      try {
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        console.log('Attempting login...');
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        
+        console.log('✓ Authentication successful');
+        
+        // Get user data from Firestore
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          const userRole = userData.role || 'user';
+          
+          // Store in session
+          sessionStorage.setItem('userName', userData.name);
+          sessionStorage.setItem('userEmail', userData.email);
+          sessionStorage.setItem('userId', user.uid);
+          sessionStorage.setItem('userRole', userRole);
+          
+          console.log('✓ User data loaded:', userData.name);
+          
+          showSuccess(`Welcome back, ${userData.name}!`);
+          
+          setTimeout(() => {
+            if (userRole === 'admin') {
+              window.location.href = 'admin.html';
+            } else {
+              window.location.href = 'index.html';
+            }
+          }, 1000);
+          
+        } else {
+          // User authenticated but no Firestore data - create basic entry
+          const userName = user.displayName || email.split('@')[0];
+          
+          sessionStorage.setItem('userName', userName);
+          sessionStorage.setItem('userEmail', user.email);
+          sessionStorage.setItem('userId', user.uid);
+          sessionStorage.setItem('userRole', 'user');
+          
+          showSuccess('Login successful!');
+          
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1000);
+        }
+        
+      } catch (error) {
+        console.error('Login error:', error);
+        handleLoginError(error);
+        
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+      }
+    }
+
+    function handleLoginError(error) {
+      let errorMsg = 'Login failed. Please try again.';
+      
+      switch(error.code) {
+        case 'auth/user-not-found':
+          errorMsg = 'No account found with this email.';
+          break;
+        case 'auth/wrong-password':
+          errorMsg = 'Incorrect password. Please try again.';
+          break;
+        case 'auth/invalid-email':
+          errorMsg = 'Invalid email format.';
+          break;
+        case 'auth/user-disabled':
+          errorMsg = 'This account has been disabled.';
+          break;
+        case 'auth/too-many-requests':
+          errorMsg = 'Too many failed attempts. Try again later.';
+          break;
+        case 'auth/network-request-failed':
+          errorMsg = 'Network error. Check your connection.';
+          break;
+        default:
+          errorMsg = error.message;
+      }
+      
+      showError(errorMsg);
+    }
+
+    function hideMessages() {
+      document.getElementById('error-message').style.display = 'none';
+      document.getElementById('success-message').style.display = 'none';
+    }
+
+    function showError(message) {
+      const errorMessage = document.getElementById('error-message');
+      errorMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + message;
+      errorMessage.style.display = 'block';
+    }
+
+    function showSuccess(message) {
+      const successMessage = document.getElementById('success-message');
+      successMessage.innerHTML = '<i class="fas fa-check-circle"></i> ' + message;
+      successMessage.style.display = 'block';
+    }
+
+    // Redirect if already logged in
+    window.addEventListener('load', function() {
+      const userName = sessionStorage.getItem('userName');
+      if (userName) {
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | Food Express</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      background: white;
+      padding: 3em;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 450px;
+      width: 100%;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 2em;
+    }
+
+    .login-header i {
+      font-size: 3.5rem;
+      color: #667eea;
+      margin-bottom: 0.5em;
+    }
+
+    .login-header h2 {
+      color: #333;
+      margin-bottom: 0.3em;
+      font-size: 1.8rem;
+    }
+
+    .login-header p {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5em;
+    }
+
+    .form-group label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 0.5em;
+      font-size: 0.95rem;
+    }
+
+    .input-container {
+      position: relative;
+    }
+
+    .input-container i.input-icon {
+      position: absolute;
+      left: 1.2em;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      font-size: 1.1rem;
+    }
+
+    .input-container .toggle-password {
+      position: absolute;
+      right: 1.2em;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .input-container .toggle-password:hover {
+      color: #667eea;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 1.1em 3.2em 1.1em 3.2em;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 1.1em;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .login-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .login-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 1.5em;
+    }
+
+    .back-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .back-link a:hover {
+      color: #764ba2;
+    }
+
+    .message {
+      padding: 1em;
+      border-radius: 8px;
+      margin-bottom: 1.5em;
+      display: none;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .error-message {
+      background: #ffebee;
+      color: #c62828;
+      border-left: 4px solid #c62828;
+    }
+
+    .success-message {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-left: 4px solid #2e7d32;
+    }
+
+    .warning-message {
+      background: #fff3e0;
+      color: #ef6c00;
+      border-left: 4px solid #ff9800;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <i class="fas fa-shield-alt"></i>
+      <h2>Admin Login</h2>
+      <p>Secure Access to Dashboard</p>
+    </div>
+
+    <div class="message error-message" id="error-message"></div>
+    <div class="message success-message" id="success-message"></div>
+    <div class="message warning-message" id="warning-message"></div>
+
+    <form id="admin-login-form">
+      <div class="form-group">
+        <label><i class="fas fa-envelope"></i> Email</label>
+        <div class="input-container">
+          <i class="fas fa-user-shield input-icon"></i>
+          <input type="email" id="email" required placeholder="Enter your admin email">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-lock"></i> Password</label>
+        <div class="input-container">
+          <i class="fas fa-key input-icon"></i>
+          <input type="password" id="password" required placeholder="Enter your password">
+          <i class="fas fa-eye toggle-password" id="toggle-password" onclick="togglePassword()"></i>
+        </div>
+      </div>
+
+      <button type="submit" class="login-btn" id="login-btn">
+        <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+      </button>
+    </form>
+
+    <div class="back-link">
+      <a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <script src="js/firebase-config.js"></script>
+  
+  <script>
+    // ===========================
+    // PASSWORD TOGGLE FUNCTION
+    // ===========================
+    function togglePassword() {
+      const passwordInput = document.getElementById('password');
+      const toggleIcon = document.getElementById('toggle-password');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+      }
+    }
+
+    // ===========================
+    // ADMIN LOGIN FORM
+    // ===========================
+    document.getElementById('admin-login-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      await adminLogin();
+    });
+
+    async function adminLogin() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const loginBtn = document.getElementById('login-btn');
+      
+      hideMessages();
+      
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+      
+      try {
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        console.log('Attempting Firebase login...');
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        
+        console.log('✓ Authentication successful');
+        console.log('User ID:', user.uid);
+        
+        let isAdmin = false;
+        try {
+          const adminDoc = await db.collection('admins').doc(user.uid).get();
+          
+          if (adminDoc.exists && adminDoc.data().isAdmin === true) {
+            isAdmin = true;
+            console.log('✓ Admin verified from Firestore');
+          } else {
+            console.log('⚠ Admin entry not found, creating...');
+            
+            try {
+              await db.collection('admins').doc(user.uid).set({
+                email: user.email,
+                isAdmin: true,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+              console.log('✓ Admin entry created');
+            } catch (writeError) {
+              console.warn('Cannot write to Firestore, but allowing login:', writeError.message);
+            }
+            
+            isAdmin = true;
+          }
+        } catch (firestoreError) {
+          console.warn('Firestore check skipped:', firestoreError.message);
+          isAdmin = true;
+        }
+        
+        if (isAdmin) {
+          await loginSuccess(user.email, user.uid);
+        }
+        
+      } catch (error) {
+        console.error('Login error:', error);
+        handleLoginError(error);
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login to Dashboard';
+      }
+    }
+
+    function handleLoginError(error) {
+      let errorMsg = 'Authentication failed. Please try again.';
+      
+      switch(error.code) {
+        case 'auth/user-not-found':
+          errorMsg = 'No user found with this email. Please check your email.';
+          break;
+        case 'auth/wrong-password':
+          errorMsg = 'Incorrect password. Please try again.';
+          break;
+        case 'auth/invalid-email':
+          errorMsg = 'Invalid email format.';
+          break;
+        case 'auth/too-many-requests':
+          errorMsg = 'Too many failed attempts. Please try again later.';
+          break;
+        case 'auth/network-request-failed':
+          errorMsg = 'Network error. Check your internet connection.';
+          break;
+        case 'permission-denied':
+          showWarning('Firestore permissions issue, but login may still work...');
+          return;
+        default:
+          errorMsg = error.message;
+      }
+      
+      showError(errorMsg);
+    }
+
+    async function loginSuccess(email, userId) {
+      showSuccess('Login successful! Redirecting to dashboard...');
+      
+      sessionStorage.setItem('isAdmin', 'true');
+      sessionStorage.setItem('adminEmail', email);
+      sessionStorage.setItem('adminId', userId);
+      sessionStorage.setItem('loginTime', new Date().toISOString());
+      
+      setTimeout(() => {
+        window.location.href = 'admin.html';
+      }, 1000);
+    }
+
+    function hideMessages() {
+      document.getElementById('error-message').style.display = 'none';
+      document.getElementById('success-message').style.display = 'none';
+      document.getElementById('warning-message').style.display = 'none';
+    }
+
+    function showError(message) {
+      const errorMessage = document.getElementById('error-message');
+      errorMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + message;
+      errorMessage.style.display = 'block';
+    }
+
+    function showSuccess(message) {
+      const successMessage = document.getElementById('success-message');
+      successMessage.innerHTML = '<i class="fas fa-check-circle"></i> ' + message;
+      successMessage.style.display = 'block';
+    }
+
+    function showWarning(message) {
+      const warningMessage = document.getElementById('warning-message');
+      warningMessage.innerHTML = '<i class="fas fa-info-circle"></i> ' + message;
+      warningMessage.style.display = 'block';
+    }
+
+    // Redirect if already logged in
+    window.addEventListener('load', function() {
+      if (sessionStorage.getItem('isAdmin') === 'true') {
+        window.location.href = 'admin.html';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart | Food Express</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ===========================
+       CART PAGE STYLES
+       =========================== */
+    .cart-page {
+      max-width: 1400px;
+      margin: 2em auto;
+      padding: 2em;
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 2em;
+    }
+
+    .cart-container {
+      background: white;
+      padding: 2em;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .cart-container h2 {
+      color: #333;
+      margin-bottom: 1.5em;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+
+    #cart-items-container {
+      min-height: 200px;
+    }
+
+    .cart-item-card {
+      display: grid;
+      grid-template-columns: 120px 1fr auto;
+      gap: 1.5em;
+      padding: 1.5em;
+      border: 2px solid #f0f0f0;
+      border-radius: 12px;
+      margin-bottom: 1.5em;
+      transition: all 0.3s ease;
+    }
+
+    .cart-item-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .cart-item-card img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .item-details h4 {
+      color: #333;
+      font-size: 1.2rem;
+      margin-bottom: 0.5em;
+    }
+
+    .item-meta {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 0.5em;
+    }
+
+    .item-price {
+      color: #ff6b6b;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 0.5em 0;
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 1em;
+      margin-top: 1em;
+    }
+
+    .quantity-controls button {
+      width: 35px;
+      height: 35px;
+      border: none;
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .quantity-controls button:hover {
+      background: #764ba2;
+      transform: scale(1.1);
+    }
+
+    .quantity-controls span {
+      font-size: 1.2rem;
+      font-weight: 600;
+      min-width: 30px;
+      text-align: center;
+    }
+
+    .remove-btn {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 0.6em 1.2em;
+      border-radius: 8px;
+      cursor: pointer;
+      height: fit-content;
+      transition: all 0.3s ease;
+    }
+
+    .remove-btn:hover {
+      background: #cc0000;
+      transform: translateY(-2px);
+    }
+
+    .empty-cart {
+      text-align: center;
+      padding: 4em 2em;
+    }
+
+    .empty-cart i {
+      font-size: 5rem;
+      color: #ccc;
+      margin-bottom: 1em;
+    }
+
+    .empty-cart h3 {
+      color: #333;
+      margin-bottom: 0.5em;
+    }
+
+    .empty-cart p {
+      color: #666;
+      margin-bottom: 2em;
+    }
+
+    .browse-btn {
+      background: #667eea;
+      color: white;
+      padding: 1em 2em;
+      border-radius: 10px;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .browse-btn:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+    }
+
+    /* Address Section Styles */
+    .address-section {
+      background: #f8f9fa;
+      padding: 1.5em;
+      border-radius: 12px;
+      margin-top: 2em;
+    }
+
+    .address-section h3 {
+      color: #333;
+      margin-bottom: 1em;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+
+    .saved-address {
+      margin-bottom: 1em;
+    }
+
+    .address-card {
+      background: white;
+      padding: 1.5em;
+      border-radius: 10px;
+      border: 2px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 1em;
+    }
+
+    .address-content {
+      flex: 1;
+    }
+
+    .address-content h4 {
+      color: #667eea;
+      margin-bottom: 0.5em;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+
+    .address-content p {
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .address-actions {
+      display: flex;
+      gap: 0.5em;
+      flex-direction: column;
+    }
+
+    .edit-address-btn,
+    .delete-address-btn {
+      border: none;
+      padding: 0.6em 1em;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3em;
+    }
+
+    .edit-address-btn {
+      background: #667eea;
+      color: white;
+    }
+
+    .edit-address-btn:hover {
+      background: #764ba2;
+    }
+
+    .delete-address-btn {
+      background: #ff6b6b;
+      color: white;
+    }
+
+    .delete-address-btn:hover {
+      background: #cc0000;
+    }
+
+    .add-address-btn {
+      background: white;
+      border: 2px dashed #667eea;
+      color: #667eea;
+      padding: 1em 2em;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .add-address-btn:hover {
+      background: #f0f4ff;
+      border-color: #764ba2;
+    }
+
+    .address-form {
+      background: white;
+      padding: 2em;
+      border-radius: 12px;
+      margin-top: 1em;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1em;
+      margin-bottom: 1em;
+    }
+
+    .form-group {
+      margin-bottom: 1em;
+    }
+
+    .form-group label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 0.5em;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.8em;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .address-type-select {
+      display: flex;
+      gap: 1em;
+    }
+
+    .address-type-select input[type="radio"] {
+      display: none;
+    }
+
+    .address-type-select label {
+      flex: 1;
+      padding: 0.8em;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .address-type-select input[type="radio"]:checked + label {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1em;
+      margin-top: 1.5em;
+    }
+
+    .save-address-btn {
+      flex: 1;
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 1em;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .save-address-btn:hover {
+      background: #45a049;
+      transform: translateY(-2px);
+    }
+
+    .cancel-btn {
+      background: #f44336;
+      color: white;
+      border: none;
+      padding: 1em 2em;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .cancel-btn:hover {
+      background: #da190b;
+    }
+
+    /* Price Summary */
+    .price-summary {
+      background: white;
+      padding: 2em;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+
+    .price-summary h3 {
+      color: #333;
+      margin-bottom: 1.5em;
+      padding-bottom: 1em;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1em;
+      color: #333;
+    }
+
+    .summary-row.total {
+      font-size: 1.3rem;
+      font-weight: 700;
+      padding-top: 1em;
+      border-top: 2px solid #f0f0f0;
+      color: #ff6b6b;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      padding: 1em;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1.5em;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5em;
+    }
+
+    .checkout-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .checkout-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 968px) {
+      .cart-page {
+        grid-template-columns: 1fr;
+      }
+      
+      .price-summary {
+        position: static;
+      }
+      
+      .cart-item-card {
+        grid-template-columns: 80px 1fr;
+      }
+      
+      .remove-btn {
+        grid-column: 1 / -1;
+        margin-top: 1em;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .address-type-select {
+        flex-direction: column;
+      }
+
+      .address-actions {
+        flex-direction: row;
+      }
+
+      .address-card {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Announcement Bar -->
+  <div class="announcement-bar">
+    <p><i class="fas fa-gift"></i> Free delivery on orders above ₹299 | Use code: FREEDOM50</p>
+  </div>
+
+  <!-- Main Navbar -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <h1><a href="index.html" style="text-decoration: none; color: inherit;"><i class="fas fa-utensils"></i> Food Express</a></h1>
+      </div>
+      
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li class="cart-link">
+          <a href="cart.html" class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge" id="cart-count">0</span>
+          </a>
+        </li>
+        
+        <li id="login-link">
+          <a href="login.html" class="signin-btn">
+            <i class="fas fa-user"></i> Login
+          </a>
+        </li>
+        <li id="signup-link">
+          <a href="signup.html" class="signup-btn">
+            <i class="fas fa-user-plus"></i> Sign Up
+          </a>
+        </li>
+        
+        <li id="user-info" style="display: none;">
+          <div class="user-profile">
+            <i class="fas fa-user-circle"></i>
+            <span id="user-name">User</span>
+          </div>
+        </li>
+        <li id="logout-button" style="display: none;">
+          <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Cart Page -->
+  <section class="cart-page">
+    <!-- Cart Items Container -->
+    <div class="cart-container">
+      <h2><i class="fas fa-shopping-cart"></i> Your Cart</h2>
+      
+      <div id="cart-items-container">
+        <!-- Cart items will be dynamically loaded here -->
+      </div>
+
+      <div id="empty-cart" class="empty-cart" style="display: none;">
+        <i class="fas fa-shopping-cart"></i>
+        <h3>Your cart is empty</h3>
+        <p>Add some delicious items to get started!</p>
+        <a href="index.html" class="browse-btn">Browse Menu</a>
+      </div>
+
+      <!-- Delivery Address Section -->
+      <div id="address-section" class="address-section" style="margin-top: 2em; display: none;">
+        <h3><i class="fas fa-map-marker-alt"></i> Delivery Address</h3>
+        
+        <div id="saved-address" class="saved-address" style="display: none;">
+          <div class="address-card">
+            <div class="address-content">
+              <h4 id="address-type">Home</h4>
+              <p id="address-details"></p>
+            </div>
+            <div class="address-actions">
+              <button class="edit-address-btn" onclick="editAddress()">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              <button class="delete-address-btn" onclick="deleteAddress()">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button id="add-address-btn" class="add-address-btn" onclick="showAddressForm()">
+          <i class="fas fa-plus"></i> Add New Address
+        </button>
+
+        <!-- Address Form -->
+        <div id="address-form" class="address-form" style="display: none;">
+          <form onsubmit="saveAddress(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="fullName" required>
+              </div>
+              <div class="form-group">
+                <label>Phone Number *</label>
+                <input type="tel" id="phone" pattern="[0-9]{10}" maxlength="10" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Complete Address *</label>
+              <textarea id="address" rows="3" required placeholder="House No., Building Name, Street"></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Landmark</label>
+                <input type="text" id="landmark">
+              </div>
+              <div class="form-group">
+                <label>Pincode *</label>
+                <input type="text" id="pincode" pattern="[0-9]{6}" maxlength="6" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>City *</label>
+                <input type="text" id="city" required>
+              </div>
+              <div class="form-group">
+                <label>State *</label>
+                <input type="text" id="state" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Address Type</label>
+              <div class="address-type-select">
+                <input type="radio" id="home" name="addressType" value="Home" checked>
+                <label for="home"><i class="fas fa-home"></i> Home</label>
+                
+                <input type="radio" id="work" name="addressType" value="Work">
+                <label for="work"><i class="fas fa-briefcase"></i> Work</label>
+                
+                <input type="radio" id="other" name="addressType" value="Other">
+                <label for="other"><i class="fas fa-map-marker"></i> Other</label>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="save-address-btn">
+                <i class="fas fa-check"></i> Save Address
+              </button>
+              <button type="button" class="cancel-btn" onclick="hideAddressForm()">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Price Summary -->
+    <div class="price-summary">
+      <h3>Bill Summary</h3>
+      
+      <div class="summary-row">
+        <span>Item Total</span>
+        <span id="subtotal">₹0</span>
+      </div>
+      <div class="summary-row">
+        <span>Delivery Fee</span>
+        <span id="delivery-fee">₹40</span>
+      </div>
+      <div class="summary-row">
+        <span>Platform Fee</span>
+        <span>₹5</span>
+      </div>
+      <div class="summary-row">
+        <span>GST (5%)</span>
+        <span id="gst">₹0</span>
+      </div>
+      <div class="summary-row total">
+        <span>To Pay</span>
+        <span id="total">₹0</span>
+      </div>
+
+      <button class="checkout-btn" id="checkout-btn" onclick="proceedToCheckout()">
+        <i class="fas fa-lock"></i> Proceed to Payment
+      </button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Food Express</h4>
+        <p>Delivering happiness to your doorstep</p>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <a href="#">About Us</a>
+        <a href="#">Contact</a>
+        <a href="#">Careers</a>
+      </div>
+      <div class="footer-section">
+        <h4>Follow Us</h4>
+        <div class="social-icons">
+          <i class="fab fa-facebook"></i>
+          <i class="fab fa-twitter"></i>
+          <i class="fab fa-instagram"></i>
+        </div>
+      </div>
+    </div>
+    <p class="copyright">&copy; 2025 Food Express. All rights reserved.</p>
+  </footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+</body>
+</html>

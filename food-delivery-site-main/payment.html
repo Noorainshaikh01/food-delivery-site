@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment | Food Express</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ===========================
+       PAYMENT PAGE STYLES
+       =========================== */
+    .payment-page {
+      max-width: 1400px;
+      margin: 2em auto;
+      padding: 2em;
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 2em;
+    }
+
+    .payment-container {
+      background: white;
+      padding: 2em;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .payment-container h2 {
+      color: #333;
+      margin-bottom: 1.5em;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+
+    /* Delivery Address Display */
+    .delivery-address-display {
+      background: #f8f9fa;
+      padding: 1.5em;
+      border-radius: 12px;
+      margin-bottom: 2em;
+      border-left: 4px solid #667eea;
+    }
+
+    .delivery-address-display h3 {
+      color: #333;
+      margin-bottom: 1em;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+
+    .delivery-address-display p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 0.5em;
+    }
+
+    .change-address-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 0.6em 1.2em;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 1em;
+      transition: all 0.3s ease;
+    }
+
+    .change-address-btn:hover {
+      background: #764ba2;
+    }
+
+    /* Payment Methods */
+    .payment-methods {
+      margin-bottom: 2em;
+    }
+
+    .payment-methods h3 {
+      color: #333;
+      margin-bottom: 1em;
+    }
+
+    .payment-option {
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 1.5em;
+      margin-bottom: 1em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 1em;
+    }
+
+    .payment-option:hover {
+      border-color: #667eea;
+      background: #f8f9ff;
+    }
+
+    .payment-option.active {
+      border-color: #667eea;
+      background: #f0f4ff;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+
+    .payment-option input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .payment-option-content {
+      flex: 1;
+    }
+
+    .payment-option-content h4 {
+      color: #333;
+      margin-bottom: 0.3em;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+
+    .payment-option-content p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .payment-icon {
+      font-size: 2rem;
+      color: #667eea;
+    }
+
+    /* Payment Forms */
+    .payment-form-container {
+      background: #f8f9fa;
+      padding: 1.5em;
+      border-radius: 12px;
+      margin-top: 1em;
+      margin-bottom: 1em;
+      display: none;
+    }
+
+    .payment-form-container.active {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .qr-code-section {
+      margin-top: 1.5em;
+      padding-top: 1.5em;
+      border-top: 2px dashed #e0e0e0;
+    }
+
+    .form-group {
+      margin-bottom: 1em;
+    }
+
+    .form-group label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 0.5em;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.8em;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1em;
+    }
+
+    /* Order Summary */
+    .order-summary {
+      background: white;
+      padding: 2em;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+
+    .order-summary h3 {
+      color: #333;
+      margin-bottom: 1.5em;
+      padding-bottom: 1em;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .order-items {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 1.5em;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.8em 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .order-item-name {
+      color: #333;
+      flex: 1;
+    }
+
+    .order-item-qty {
+      color: #666;
+      margin: 0 1em;
+    }
+
+    .order-item-price {
+      color: #ff6b6b;
+      font-weight: 600;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1em;
+      color: #333;
+    }
+
+    .summary-row.total {
+      font-size: 1.3rem;
+      font-weight: 700;
+      padding-top: 1em;
+      border-top: 2px solid #f0f0f0;
+      color: #ff6b6b;
+    }
+
+    .place-order-btn {
+      width: 100%;
+      padding: 1em;
+      background: linear-gradient(90deg, #4caf50 0%, #45a049 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1.5em;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5em;
+    }
+
+    .place-order-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+    }
+
+    .place-order-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Success Modal */
+    .success-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .success-modal.active {
+      display: flex;
+    }
+
+    .success-content {
+      background: white;
+      padding: 3em;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 500px;
+      animation: scaleIn 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .success-icon {
+      font-size: 5rem;
+      color: #4caf50;
+      margin-bottom: 1em;
+    }
+
+    .success-content h2 {
+      color: #333;
+      margin-bottom: 0.5em;
+    }
+
+    .success-content p {
+      color: #666;
+      margin-bottom: 1.5em;
+      line-height: 1.6;
+    }
+
+    .order-id {
+      background: #f8f9fa;
+      padding: 1em;
+      border-radius: 10px;
+      margin: 1em 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #667eea;
+    }
+
+    .success-actions {
+      display: flex;
+      gap: 1em;
+      margin-top: 2em;
+    }
+
+    .success-actions button {
+      flex: 1;
+      padding: 1em;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .track-order-btn {
+      background: #667eea;
+      color: white;
+    }
+
+    .continue-shopping-btn {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    /* Responsive */
+    @media (max-width: 968px) {
+      .payment-page {
+        grid-template-columns: 1fr;
+      }
+      
+      .order-summary {
+        position: static;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .success-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Announcement Bar -->
+  <div class="announcement-bar">
+    <p><i class="fas fa-gift"></i> Free delivery on orders above ₹299 | Use code: FREEDOM50</p>
+  </div>
+
+  <!-- Main Navbar -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <h1><a href="index.html" style="text-decoration: none; color: inherit;"><i class="fas fa-utensils"></i> Food Express</a></h1>
+      </div>
+      
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li class="cart-link">
+          <a href="cart.html" class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge" id="cart-count">0</span>
+          </a>
+        </li>
+        
+        <li id="login-link">
+          <a href="login.html" class="signin-btn">
+            <i class="fas fa-user"></i> Login
+          </a>
+        </li>
+        <li id="signup-link">
+          <a href="signup.html" class="signup-btn">
+            <i class="fas fa-user-plus"></i> Sign Up
+          </a>
+        </li>
+        
+        <li id="user-info" style="display: none;">
+          <div class="user-profile">
+            <i class="fas fa-user-circle"></i>
+            <span id="user-name">User</span>
+          </div>
+        </li>
+        <li id="logout-button" style="display: none;">
+          <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Payment Page -->
+  <section class="payment-page">
+    <!-- Payment Container -->
+    <div class="payment-container">
+      <h2><i class="fas fa-credit-card"></i> Payment</h2>
+
+      <!-- Delivery Address Display -->
+      <div class="delivery-address-display">
+        <h3><i class="fas fa-map-marker-alt"></i> Delivery Address</h3>
+        <p id="delivery-address-text"></p>
+        <button class="change-address-btn" onclick="window.location.href='cart.html'">
+          <i class="fas fa-edit"></i> Change Address
+        </button>
+      </div>
+
+      <!-- Payment Methods -->
+      <div class="payment-methods">
+        <h3>Select Payment Method</h3>
+
+        <!-- UPI Payment -->
+        <div class="payment-option" onclick="selectPayment('upi')">
+          <input type="radio" name="payment" id="upi" value="upi">
+          <div class="payment-icon">
+            <i class="fas fa-mobile-alt"></i>
+          </div>
+          <div class="payment-option-content">
+            <h4>UPI</h4>
+            <p>Pay using Google Pay, PhonePe, Paytm, etc.</p>
+          </div>
+        </div>
+
+        <!-- UPI Form -->
+        <div class="payment-form-container" id="upi-form">
+          <div class="form-group">
+            <label>Enter UPI ID</label>
+            <input type="text" id="upiId" placeholder="yourname@paytm">
+            <p style="font-size: 0.85rem; color: #666; margin-top: 0.5em;">
+              Enter your UPI ID (e.g., 9876543210@paytm, username@oksbi)
+            </p>
+          </div>
+          <div class="qr-code-section">
+            <p style="text-align: center; margin-bottom: 1em; color: #666;">OR Scan QR Code</p>
+            <div style="background: #fff; padding: 2em; border-radius: 10px; text-align: center;">
+              <i class="fas fa-qrcode" style="font-size: 5rem; color: #667eea;"></i>
+              <p style="margin-top: 1em; color: #666;">Scan with any UPI app</p>
+            </div>
+          </div>
+        </div>
+        
+
+        <!-- Card Payment -->
+        <div class="payment-option" onclick="selectPayment('card')">
+          <input type="radio" name="payment" id="card" value="card">
+          <div class="payment-icon">
+            <i class="fas fa-credit-card"></i>
+          </div>
+          <div class="payment-option-content">
+            <h4>Credit / Debit Card</h4>
+            <p>Visa, Mastercard, RuPay accepted</p>
+          </div>
+        </div>
+
+        <!-- Card Payment Form -->
+        <div class="payment-form-container" id="card-form">
+          <div class="form-group">
+            <label>Card Number</label>
+            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+          </div>
+          <div class="form-group">
+            <label>Card Holder Name</label>
+            <input type="text" id="cardName" placeholder="Name on card">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Expiry Date</label>
+              <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5">
+            </div>
+            <div class="form-group">
+              <label>CVV</label>
+              <input type="text" id="cvv" placeholder="123" maxlength="3">
+            </div>
+          </div>
+        </div>
+
+        <!-- Net Banking -->
+        <div class="payment-option" onclick="selectPayment('netbanking')">
+          <input type="radio" name="payment" id="netbanking" value="netbanking">
+          <div class="payment-icon">
+            <i class="fas fa-university"></i>
+          </div>
+          <div class="payment-option-content">
+            <h4>Net Banking</h4>
+            <p>All major banks supported</p>
+          </div>
+        </div>
+
+        <!-- Net Banking Form -->
+        <div class="payment-form-container" id="netbanking-form">
+          <div class="form-group">
+            <label>Select Your Bank</label>
+            <select id="bankSelect">
+              <option value="">Choose Bank</option>
+              <option value="sbi">State Bank of India</option>
+              <option value="hdfc">HDFC Bank</option>
+              <option value="icici">ICICI Bank</option>
+              <option value="axis">Axis Bank</option>
+              <option value="kotak">Kotak Mahindra Bank</option>
+              <option value="pnb">Punjab National Bank</option>
+              <option value="bob">Bank of Baroda</option>
+              <option value="canara">Canara Bank</option>
+              <option value="union">Union Bank of India</option>
+              <option value="idbi">IDBI Bank</option>
+              <option value="other">Other Banks</option>
+            </select>
+          </div>
+          <p style="font-size: 0.85rem; color: #666; margin-top: 1em;">
+            <i class="fas fa-info-circle"></i> You will be redirected to your bank's secure payment gateway
+          </p>
+        </div>
+
+        <!-- Cash on Delivery -->
+        <div class="payment-option" onclick="selectPayment('cod')">
+          <input type="radio" name="payment" id="cod" value="cod" checked>
+          <div class="payment-icon">
+            <i class="fas fa-money-bill-wave"></i>
+          </div>
+          <div class="payment-option-content">
+            <h4>Cash on Delivery</h4>
+            <p>Pay when you receive your order</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="order-summary">
+      <h3>Order Summary</h3>
+      
+      <div class="order-items" id="order-items">
+        <!-- Order items will be loaded here -->
+      </div>
+
+      <div class="summary-row">
+        <span>Item Total</span>
+        <span id="subtotal">₹0</span>
+      </div>
+      <div class="summary-row">
+        <span>Delivery Fee</span>
+        <span id="delivery-fee">₹40</span>
+      </div>
+      <div class="summary-row">
+        <span>Platform Fee</span>
+        <span id="platform-fee">₹5</span>
+      </div>
+      <div class="summary-row">
+        <span>GST (5%)</span>
+        <span id="gst">₹0</span>
+      </div>
+      <div class="summary-row total">
+        <span>Total Amount</span>
+        <span id="total">₹0</span>
+      </div>
+
+      <button class="place-order-btn" onclick="placeOrder()">
+        <i class="fas fa-check-circle"></i> Place Order
+      </button>
+    </div>
+  </section>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="success-modal">
+    <div class="success-content">
+      <div class="success-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2>Order Placed Successfully!</h2>
+      <p>Thank you for your order. Your food will be delivered soon.</p>
+      <div class="order-id">
+        Order ID: <span id="order-id-display"></span>
+      </div>
+      <p style="font-size: 0.9rem;">You will receive an SMS and email confirmation shortly.</p>
+      <div class="success-actions">
+        <button class="track-order-btn" onclick="trackOrder()">
+          <i class="fas fa-route"></i> Track Order
+        </button>
+        <button class="continue-shopping-btn" onclick="continueShopping()">
+          <i class="fas fa-home"></i> Home
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Food Express</h4>
+        <p>Delivering happiness to your doorstep</p>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <a href="#">About Us</a>
+        <a href="#">Contact</a>
+        <a href="#">Careers</a>
+      </div>
+      <div class="footer-section">
+        <h4>Follow Us</h4>
+        <div class="social-icons">
+          <i class="fab fa-facebook"></i>
+          <i class="fab fa-twitter"></i>
+          <i class="fab fa-instagram"></i>
+        </div>
+      </div>
+    </div>
+    <p class="copyright">&copy; 2025 Food Express. All rights reserved.</p>
+  </footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <script src="js/auth.js"></script>
+  <!-- Razorpay Payment Gateway -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="js/payment.js"></script>
+</body>
+</html>
