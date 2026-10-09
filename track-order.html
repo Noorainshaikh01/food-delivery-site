@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Order | Food Express</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .track-order-page {
+      max-width: 1200px;
+      margin: 2em auto;
+      padding: 2em;
+    }
+
+    .track-header {
+      text-align: center;
+      margin-bottom: 3em;
+    }
+
+    .track-header h1 {
+      color: #333;
+      margin-bottom: 0.5em;
+    }
+
+    .order-id-display {
+      background: #f8f9fa;
+      padding: 1em 2em;
+      border-radius: 10px;
+      display: inline-block;
+      margin-top: 1em;
+    }
+
+    .order-id-display span {
+      color: #667eea;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .tracking-container {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 2em;
+      margin-top: 2em;
+    }
+
+    /* Order Status Timeline */
+    .status-timeline {
+      background: white;
+      padding: 2em;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .status-timeline h2 {
+      color: #333;
+      margin-bottom: 2em;
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 3em;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: #e0e0e0;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 2.5em;
+      padding-bottom: 1em;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-icon {
+      position: absolute;
+      left: -2.8em;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #999;
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      z-index: 2;
+    }
+
+    .timeline-item.completed .timeline-icon {
+      background: #4caf50;
+      color: white;
+    }
+
+    .timeline-item.active .timeline-icon {
+      background: #667eea;
+      color: white;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .timeline-content h3 {
+      color: #333;
+      margin-bottom: 0.5em;
+      font-size: 1.1rem;
+    }
+
+    .timeline-content p {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 0.3em;
+    }
+
+    .timeline-content .time {
+      color: #999;
+      font-size: 0.85rem;
+    }
+
+    /* Order Details Card */
+    .order-details-card {
+      background: white;
+      padding: 2em;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+
+    .order-details-card h3 {
+      color: #333;
+      margin-bottom: 1.5em;
+      padding-bottom: 1em;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1em;
+      color: #333;
+    }
+
+    .detail-row.highlight {
+      background: #f8f9fa;
+      padding: 1em;
+      border-radius: 8px;
+      font-weight: 600;
+      color: #667eea;
+    }
+
+    .order-items-list {
+      margin: 1.5em 0;
+      padding: 1em;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .order-items-list h4 {
+      color: #333;
+      margin-bottom: 1em;
+      font-size: 1rem;
+    }
+
+    .order-item-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5em 0;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .delivery-address {
+      margin-top: 1.5em;
+      padding: 1em;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .delivery-address h4 {
+      color: #333;
+      margin-bottom: 0.5em;
+      font-size: 1rem;
+    }
+
+    .delivery-address p {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .action-buttons {
+      margin-top: 2em;
+      display: flex;
+      gap: 1em;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 1em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .home-btn {
+      background: #667eea;
+      color: white;
+    }
+
+    .home-btn:hover {
+      background: #764ba2;
+    }
+
+    .help-btn {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .help-btn:hover {
+      background: #e0e0e0;
+    }
+
+    /* Responsive */
+    @media (max-width: 968px) {
+      .tracking-container {
+        grid-template-columns: 1fr;
+      }
+
+      .order-details-card {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Announcement Bar -->
+  <div class="announcement-bar">
+    <p><i class="fas fa-gift"></i> Free delivery on orders above ₹299 | Use code: FREEDOM50</p>
+  </div>
+
+  <!-- Main Navbar -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <h1><a href="index.html" style="text-decoration: none; color: inherit;"><i class="fas fa-utensils"></i> Food Express</a></h1>
+      </div>
+      
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li class="cart-link">
+          <a href="cart.html" class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge" id="cart-count">0</span>
+          </a>
+        </li>
+        
+        <li id="login-link">
+          <a href="login.html" class="signin-btn">
+            <i class="fas fa-user"></i> Login
+          </a>
+        </li>
+        <li id="signup-link">
+          <a href="signup.html" class="signup-btn">
+            <i class="fas fa-user-plus"></i> Sign Up
+          </a>
+        </li>
+        
+        <li id="user-info" style="display: none;">
+          <div class="user-profile">
+            <i class="fas fa-user-circle"></i>
+            <span id="user-name">User</span>
+          </div>
+        </li>
+        <li id="logout-button" style="display: none;">
+          <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Track Order Page -->
+  <div class="track-order-page">
+    <div class="track-header">
+      <h1><i class="fas fa-route"></i> Track Your Order</h1>
+      <div class="order-id-display">
+        Order ID: <span id="order-id-text"></span>
+      </div>
+    </div>
+
+    <div class="tracking-container">
+      <!-- Status Timeline -->
+      <div class="status-timeline">
+        <h2>Order Status</h2>
+        <div class="timeline">
+          <div class="timeline-item completed">
+            <div class="timeline-icon">
+              <i class="fas fa-check"></i>
+            </div>
+            <div class="timeline-content">
+              <h3>Order Confirmed</h3>
+              <p>Your order has been placed successfully</p>
+              <span class="time" id="time-confirmed"></span>
+            </div>
+          </div>
+
+          <div class="timeline-item active">
+            <div class="timeline-icon">
+              <i class="fas fa-utensils"></i>
+            </div>
+            <div class="timeline-content">
+              <h3>Preparing Your Food</h3>
+              <p>Our chef is preparing your delicious meal</p>
+              <span class="time">In Progress...</span>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-icon">
+              <i class="fas fa-motorcycle"></i>
+            </div>
+            <div class="timeline-content">
+              <h3>Out for Delivery</h3>
+              <p>Your order is on its way</p>
+              <span class="time">Pending</span>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-icon">
+              <i class="fas fa-home"></i>
+            </div>
+            <div class="timeline-content">
+              <h3>Delivered</h3>
+              <p>Enjoy your meal!</p>
+              <span class="time">Pending</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Details -->
+      <div class="order-details-card">
+        <h3>Order Details</h3>
+        
+        <div class="detail-row highlight">
+          <span>Estimated Delivery</span>
+          <span id="estimated-time"></span>
+        </div>
+
+        <div class="detail-row">
+          <span>Order Date</span>
+          <span id="order-date"></span>
+        </div>
+
+        <div class="detail-row">
+          <span>Payment Method</span>
+          <span id="payment-method"></span>
+        </div>
+
+        <div class="order-items-list">
+          <h4>Items Ordered</h4>
+          <div id="items-list"></div>
+        </div>
+
+        <div class="detail-row">
+          <span>Subtotal</span>
+          <span id="subtotal"></span>
+        </div>
+        <div class="detail-row">
+          <span>Delivery Fee</span>
+          <span id="delivery-fee"></span>
+        </div>
+        <div class="detail-row" style="font-weight: 700; font-size: 1.1rem; color: #667eea; margin-top: 1em; padding-top: 1em; border-top: 2px solid #f0f0f0;">
+          <span>Total Paid</span>
+          <span id="total"></span>
+        </div>
+
+        <div class="delivery-address">
+          <h4><i class="fas fa-map-marker-alt"></i> Delivery Address</h4>
+          <p id="delivery-address"></p>
+        </div>
+
+        <div class="action-buttons">
+          <button class="action-btn home-btn" onclick="window.location.href='index.html'">
+            <i class="fas fa-home"></i> Home
+          </button>
+          <button class="action-btn help-btn" onclick="alert('Contact Support: +91-1800-XXX-XXXX')">
+            <i class="fas fa-headset"></i> Help
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Food Express</h4>
+        <p>Delivering happiness to your doorstep</p>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <a href="#">About Us</a>
+        <a href="#">Contact</a>
+        <a href="#">Careers</a>
+      </div>
+      <div class="footer-section">
+        <h4>Follow Us</h4>
+        <div class="social-icons">
+          <i class="fab fa-facebook"></i>
+          <i class="fab fa-twitter"></i>
+          <i class="fab fa-instagram"></i>
+        </div>
+      </div>
+    </div>
+    <p class="copyright">&copy; 2025 Food Express. All rights reserved.</p>
+  </footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <script src="js/auth.js"></script>
+  <script src="js/track-order.js"></script>
+</body>
+</html>

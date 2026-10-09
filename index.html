@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Express | Order Food Online</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="announcement-bar">
+    <p><i class="fas fa-gift"></i> Free delivery on orders above ₹299 | Use code: FREEDOM50</p>
+  </div>
+
+  <!-- Main Navbar -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <h1><i class="fas fa-utensils"></i> Food Express</h1>
+      </div>
+      
+      <!-- Search Bar in Navbar -->
+      <div class="nav-search">
+        <input type="text" placeholder="Search for dishes or restaurants..." id="navSearchInput">
+        <button><i class="fas fa-search"></i></button>
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="" class="nav-active">Home</a></li>
+       
+        <li class="cart-link">
+          <a href="cart.html" class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge" id="cart-count">0</span>
+          </a>
+        </li>
+        
+        <!-- Show when NOT logged in -->
+        <li id="login-link">
+          <a href="login.html" class="signin-btn">
+            <i class="fas fa-user"></i> Login
+          </a>
+        </li>
+        <li id="signup-link">
+          <a href="signup.html" class="signup-btn">
+            <i class="fas fa-user-plus"></i> Sign Up
+          </a>
+        </li>
+        
+        <!-- Show when logged in -->
+        <li id="user-info" style="display: none;">
+          <div class="user-profile">
+            <i class="fas fa-user-circle"></i>
+            <span id="user-name">User</span>
+          </div>
+        </li>
+        <li id="logout-button" style="display: none;">
+          <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </li>
+      </ul>
+
+      <!-- Mobile Menu Toggle -->
+      <div class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+    </nav>
+
+    <!-- Category Tabs Navigation -->
+    <div class="category-tabs">
+      <button class="tab-btn active" data-category="all">
+        <i class="fas fa-th"></i> All
+      </button>
+      <button class="tab-btn" data-category="pizza">
+        <i class="fas fa-pizza-slice"></i> Pizza
+      </button>
+      <button class="tab-btn" data-category="burger">
+        <i class="fas fa-hamburger"></i> Burgers
+      </button>
+      <button class="tab-btn" data-category="biryani">
+        <i class="fas fa-drumstick-bite"></i> Biryani
+      </button>
+      <button class="tab-btn" data-category="chinese">
+        <i class="fas fa-fire"></i> Chinese
+      </button>
+      <button class="tab-btn" data-category="dessert">
+        <i class="fas fa-ice-cream"></i> Desserts
+      </button>
+      <button class="tab-btn" data-category="beverages">
+        <i class="fas fa-coffee"></i> Beverages
+      </button>
+      <button class="tab-btn" data-category="healthy">
+        <i class="fas fa-leaf"></i> Healthy
+      </button>
+      <button class="tab-btn" data-category="snacks">
+        <i class="fas fa-cookie"></i> Snacks
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero animated-fadein" id="home">
+    <div class="hero-slider">
+      <div class="hero-slide active">
+        <div class="hero-content">
+          <h2>Craving Something Delicious?</h2>
+          <p>Order from 100+ restaurants with fastest delivery</p>
+          <button class="cta-btn">Order Now <i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filter and Sort Section -->
+  <section class="filter-section">
+    <div class="filter-controls">
+      <div class="filter-group">
+        <label><i class="fas fa-filter"></i> Sort By:</label>
+        <select id="sortSelect">
+          <option value="relevance">Relevance</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="rating">Rating</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-rupee-sign"></i> Price Range:</label>
+        <select id="priceFilter">
+          <option value="all">All Prices</option>
+          <option value="0-100">Under ₹100</option>
+          <option value="100-200">₹100 - ₹200</option>
+          <option value="200-500">₹200 - ₹500</option>
+          <option value="500+">Above ₹500</option>
+        </select>
+      </div>
+      <div class="results-info">
+        <span id="results-count">Showing 0 items</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Food Menu Section -->
+  <section id="menu" class="menu-section">
+    <div class="section-header">
+      <h3>Explore Our Menu</h3>
+      <p>Discover delicious dishes from top restaurants</p>
+    </div>
+    
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="spinner-container">
+      <div class="spinner"></div>
+      <p>Loading delicious food...</p>
+    </div>
+
+    <!-- Food Grid -->
+    <div class="menu-grid" id="foodGrid">
+      <!-- Dynamically populated -->
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="pagination">
+      <button class="page-btn" id="prevBtn"><i class="fas fa-chevron-left"></i> Previous</button>
+      <div class="page-numbers" id="pageNumbers"></div>
+      <button class="page-btn" id="nextBtn">Next <i class="fas fa-chevron-right"></i></button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Food Express</h4>
+        <p>Delivering happiness to your doorstep</p>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <a href="#">About Us</a>
+        <a href="#">Contact</a>
+        <a href="#">Careers</a>
+      </div>
+      <div class="footer-section">
+        <h4>Follow Us</h4>
+        <div class="social-icons">
+          <i class="fab fa-facebook"></i>
+          <i class="fab fa-twitter"></i>
+          <i class="fab fa-instagram"></i>
+        </div>
+      </div>
+    </div>
+    <p class="copyright">&copy; 2025 Food Express. All rights reserved.</p>
+  </footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
